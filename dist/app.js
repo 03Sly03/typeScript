@@ -1,4 +1,3 @@
-"use strict";
 // (Le code retranscris vers app.js varie selon la version d'ecmascript dans tsconfig.json)
 // SYNTAXE DE BASE
 const a = "Hello World!";
@@ -476,3 +475,75 @@ type objSteps = {
 l'autre intéret c'est que avec enum ça donne un type directement, alors que en objet on doit faire:
 let testou: keyof objSteps = 'Intro';
 */
+/***************/
+/* DECLARATION */
+/***************/
+// Comment utiliser les fichiers de déclarations
+/*
+ou comment combler les lacunes de librairies tiers qu'on installerai et qui ne serai pas typé.
+lorsque on utilise des librairies en javaScript on va pas les importer facilement en TypeScript, parce que les types vont manquer. => C'est là qu'intervienent les fichiers de déclaration.
+exemple de fichier de déclaration:
+    Lorsqu'on tape document et qu'on fait un ctrl+clicDroit dessus, ça ouvre un fichier lib.dom.d.ts qui est en fait un fichier de déclaration.
+    un fichier qui contient l'ensemble des variables, des propriétés et des méthodes qu'on peut utiliser lorsqu'on est dans le dom
+    ces fichiers de déclaration, sont très important car ils permettent un meilleur auto-complétion et une meilleur compréhension de la librairie.
+*/
+// imaginon exporter une classe
+export class testPoint {
+    x = 0;
+    y = 0;
+    move(x, y) {
+        this.x += x;
+        this.y += y;
+        return this; // ça retourne une instance
+    }
+}
+// cette classe générer en js sera utilisable, mais si on veut faire en sorte qu'il y ai de l'auto-complétion:
+/*
+Dans tsconfig.json, on ajoute le -> "declaration" = true <- un nouveau fichier de déclaration app.d.ts est généré dans le dossier dist. on peut spécifier un dossier différent avec -> "declarationDir" = "" <-
+    dans ce fichier de déclaration, on voit le mot clé 'declare'. En fait on déclare qu'on exporte une classe testPoint et on a la structure de la classe qui est représenté sous forme de type
+en fait a partir du code, ça génére des fichiers de définition.
+*/
+// on peut aussi utiliser les fichiers de déclarations pour combler des lacunes qu'on aurai dans notre projet.
+// Par exemple dans index.html, on a le script de google analitics et on peut y voir la variable global ga(...) qu'on va pouvoir utiliser pour envoyé des énénements
+ga('send', {
+    hitType: 'event',
+    eventCategory: 'category'
+});
+// mais cette variable ga, il ne la trouve pas. pour qu'il la trouve on fait comme suit:
+/*
+=> on créé un fichier de déclaration pour l'aider
+    -> création d'un dossier "types" dans le dossier "src"
+        ->  à l'intérieur on créé des fichiers de déclaration qui correspondent aux différents types. ici : ga.d.ts
+            et on va pouvoir déclarer des variables qui seront accessible globalement (voir le fichier "src/types/ga.d.ts")
+
+=> on ajoute "includes": ["src/types/..."] dans le fichier tsconfig.json
+
+Maintenant la variable est disponible.
+*/
+// autre façon de faire en intégrant la variable dans une interface comme window. (voir le fichier "src/types/ga.d.ts")
+window.ga('send', {
+    hitType: 'event',
+    eventCategory: 'category'
+});
+/*
+Maintenant si on veut intégrer une librairie qui provient de npm.
+Exemple avec la librairy scroll-to qui n'as pas de fichier de déclaration. Comme peut l'avoir d'autres librairies par exemple "react"du genre @types/react.
+ça va donc être à nous de les créer. pour le test on install la librairie scroll-to
+*/
+// on adapte au système de module avec le import.
+import scrollTo from 'scroll-to'; // ça dit que le module est introuvable. il faut lui dire qu'il utilise le système de résolution de nodeJS et qu'il récupére ce qu'il faut dans node_modules. dans tsconfig.ts -> "moduleResolution": "node"
+// ça ne suffit pas, il faut créer le fichier de déclaration. "src/types/scroll-to.d.ts". => on y déclare la méthode scroll-to. (par contre c'est une méthode qui est disponible dans un module)
+scrollTo(500, 1200, {
+    ease: 'out-bounce',
+    duration: 1500
+});
+/******************************************/
+/* TYPES UTILITAIRES (TYPES PERSONNALISE) */
+/******************************************/
+// Les classes conditionnel
+class Fish {
+}
+class Cat {
+}
+function generator(options) {
+}

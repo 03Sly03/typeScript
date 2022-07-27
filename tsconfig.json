@@ -1,9 +1,12 @@
 {
     "compilerOptions": {
         "outDir": "dist",
-        "target": "ES6",
+        "target": "ES2022",
         "noEmitOnError": true,
-        "strict": true
+        "strict": true,
+        "declaration": true,
+        "moduleResolution": "node",
+        "noUncheckedIndexedAccess": true
     },
     "files": [
         "src/app.ts"
